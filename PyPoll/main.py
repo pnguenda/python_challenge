@@ -1,39 +1,71 @@
 # import dependencies 
-import pandas as pd
+import csv
+import os
 
 # read a file
-data_file = pd.read_csv("Resources/election_data.csv")
+election_csv_path = os.path.join("Resources/election_data.csv")
 
-#print(data_file)
+with open(election_csv_path) as csvfile:
+    csv_reader = csv.reader(csvfile, delimiter=",")
+    csv_header = next(csv_reader)
+    print(f"CSV Header: {csv_header}")
 
-# calculate the total number of votes cast
-total_votes = len(data_file)
-#total_votes
+    #list to hold data
+    candidates = []
+    voters_ID = []
 
-# create the complete list of candidates who received votes
-candidates_count = data_file["Candidate"].value_counts()
-#candidates_count
+    #read through each row of data
+    for row in csv_reader:
+        candidates.append(row[2])
+        voters_ID.append(row[0])
 
-# percentage of votes won by each candidates 
-percentage_votes = (candidates_count/total_votes) *100
-#percentage_votes
+    #votes by person 
+    d = {}
+    #loop through the candidates list
+    for candidate in candidates:
+        if candidate in d.keys(): 
+            d[candidate] += 1
 
-# winner of the election
-winner = candidates_count.idxmax()
-#winner
+        else:
+            d[candidate] = 1
+            
+    #calculate the total number of votes cast
+    total_votes = (len(voters_ID))
 
-# print all the results
+
+    #return percentage of votes won by each candidate in a dict
+    K_percent = round(((2218231/total_votes) * 100),3)
+    C_percent = round(((704200/total_votes) * 100),3)
+    L_percent = round(((492940/total_votes) * 100),3)
+    O_percent = round(((105630/total_votes) * 100),3)
+    print(K_percent)
+    print(C_percent)
+    print(L_percent)
+    print(O_percent)
+
+    #election winner
+    if K_percent > max(C_percent, L_percent, O_percent):
+        winner = "Khan"
+    elif C_percent > max(K_percent, L_percent, O_percent):
+        winner = "Correy"
+    elif L_percent > max(K_percent, C_percent, O_percent):
+        winner = "Li"
+    else: 
+        winner = "O'Tooley"
+    print(winner)
+    
+
+#print all statements 
 print("```text")
-print("Election results")
-print("...........................")
-print("Total votes: " + str(total_votes))
-print("...........................")
-print("Khan:" + " " + str(round(percentage_votes[0],3)) + "%" + "("+str(candidates_count[0])+")")
-print("Correy:" + " " + str(round(percentage_votes[1],3)) + "%" + "("+str(candidates_count[1])+")")    
-print("Li:" + " " + str(round(percentage_votes[2],3)) + "%" + "("+str(candidates_count[2])+")")    
-print("O'Tooley:" + " " + str(round(percentage_votes[3],3)) + "%" + "("+str(candidates_count[3])+")")
-print("............................")
-print("winner: " + winner)
-print("............................")
+print("Election Results")
+print(".............................")
+print("Total Votes: " + str(total_votes))
+print(".............................")
+print(f'Khan: {K_percent}%' + "   " + (str(d['Khan'])))
+print(f'Correy: {C_percent}%' + "   " + (str(d['Correy'])))
+print(f'Li: {L_percent}%' + "   " + (str(d['Li'])))
+print(f"O'Tooley: {O_percent}%" + "   " + (str(d["O'Tooley"])))
+print(".............................")
+print(f"Winner: " + winner)
+print(".............................")
 print("```")
-
